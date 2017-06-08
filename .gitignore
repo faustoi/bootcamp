@@ -1,2 +1,14 @@
-# Created by .ignore support plugin (hsz.mobi)
 .idea/
+
+*.iml
+*.ipr
+*.iws
+*.csv
+*.csv.gz
+
+target/
+.twitter-creds.properties
+
+notebooks/derby.log
+notebooks/.ipynb_checkpoints
+notebooks/metastore_db
