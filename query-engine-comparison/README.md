@@ -39,7 +39,7 @@ mv <directory_path_to>/*.tar.gz data/
 
 ## 3. Run the Docker Image
 ```bash
-docker run --hostname=quickstart.cloudera --privileged=true -t -i -p 80:80 -p 4040:4040 -p 7180:7180 -p 8888:8888 -p 10000:10000 --name quickstart -v data:/data query-engine-comparison
+docker run --hostname=quickstart.cloudera --privileged=true -t -i -p 80:80 -p 4040:4040 -p 7180:7180 -p 8888:8888 -p 10000:10000 --name quickstart -v `pwd`/data:/data query-engine-comparison
 ```
 The above command may take several minutes to run as it starts several services and creates tables. Note that it maps 
 the port numbers from Docker to the host machine, so please ensure that you're not running any web server or other 
