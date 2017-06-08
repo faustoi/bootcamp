@@ -12,26 +12,26 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class MetricExport {
   private static final Logger logger = LoggerFactory.getLogger(MetricExport.class);
   
   private static final String prefix = "tutorial";
   
-  @Bean
+  //@Bean
   public MetricRegistry metricRegistry() {
     final MetricRegistry metricRegistry = new MetricRegistry();
     return metricRegistry;
   }
   
-  @Bean
-  @ExportMetricWriter
+  //@Bean
+  //@ExportMetricWriter
   MetricWriter metricWriter() {
     return new StatsdMetricWriter(prefix, "localhost", 8125);
   }
   
-  @Bean
-  @ExportMetricReader
+  //@Bean
+  //@ExportMetricReader
   MetricReader metricReader() {
     return new MetricRegistryMetricReader(metricRegistry());
   }

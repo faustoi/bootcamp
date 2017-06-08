@@ -21,7 +21,7 @@ object StructuredStreamingTutorial extends LazyLogging {
 
     import spark.implicits._
 
-    val raw = spark.readStream // <-- change to readStream
+    val raw = spark.read // <-- change to readStream
       .format("kafka")
       .option("kafka.bootstrap.servers", "kafka:9092")
       .option("subscribe", "test_topic")
@@ -38,41 +38,25 @@ object StructuredStreamingTutorial extends LazyLogging {
       .toDF("id", "when", "sender", "value")
 
     // Create CassandraConnector
-    val connector = CassandraConnector(spark.sparkContext)
     val statement = "insert into demo.raw_tweets (id, when, sender, value) values (?,?,?,?)"
     logger.info("Submitting raw tweet ingest query")
     // write stream using CassandraWriter
-    val rawIngest = tweets.writeStream
-        .outputMode("append")
-        .foreach(CassandraWriter(connector, statement))
-        .start()
 
 
     spark.udf.register("termSearch", Helpers.termSearch("nba", "nfl"))
     val statement2 = "insert into demo.window_snapshots (when, term, value) values (?,?,?)"
     logger.info("Submitting windowed counts query")
     // Write windowed counts to cassandra
-    val windowed = tweets
     // - convert when to timestamp
-    .withColumn("ts", expr("cast(when / 1000 as timestamp)"))
     // - register watermark
-    .withWatermark("ts", "2 minutes")
     // - search for terms
-    .selectExpr("ts", "explode(termSearch(value)) as term")
     // - group by window and term and get count
-    .groupBy(window($"ts", "1 minute", "5 seconds").as("w"), $"term").count()
     // - convert to expected schema
-    .selectExpr("cast(w.start as bigint) * 1000 as when", "term", "cast(count as int) as count")
     // - write stream with CassandraWriter
-    .writeStream
-        .outputMode("update")
-    .foreach(CassandraWriter(connector, statement2))
-    .start()
 
 
     logger.info("Waiting for termination")
     // wait for termination
-    rawIngest.awaitTermination()
   }
 
   case class CassandraWriter(connector: CassandraConnector, statement: String) extends ForeachWriter[Row] {

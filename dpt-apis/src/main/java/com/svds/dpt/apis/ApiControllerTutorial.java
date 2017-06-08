@@ -19,9 +19,6 @@ public class ApiControllerTutorial {
   
   public static final String indexResponse = "{\"status\"=\"just wrong\"}";
   
-  @Autowired private CassandraOperations cassandraOperations;
-  @Autowired private MetricRegistry metricRegistry;
-  
   @RequestMapping("/")
   public String index() {
     return indexResponse;
@@ -30,25 +27,13 @@ public class ApiControllerTutorial {
   @RequestMapping("/getTweet")
   public ResponseEntity<Tweet> lookupTweet(@RequestParam(value = "tweetId", defaultValue = "0") long tweetId) {
     // start timing the operation
-    Timer.Context ctx = metricRegistry.timer("get_tweet_timer").time();
     
     ResponseEntity<Tweet> response = null;
     
     // build the select statement
-    Select select = QueryBuilder.select().from("demo", "raw_tweets");
-    select.where(QueryBuilder.eq("id", tweetId));
-    
     // execute the query
-    Tweet tweet = cassandraOperations.selectOne(select, Tweet.class);
-    
     // 404 for null, 200 for tweet
-    if (tweet == null) {
-      response = new ResponseEntity<Tweet>(HttpStatus.NOT_FOUND);
-    } else {
-      response = new ResponseEntity<Tweet>(tweet, HttpStatus.OK);
-    }
     
-    ctx.stop();
     return response;
   }
   
@@ -58,8 +43,6 @@ public class ApiControllerTutorial {
     
     // build select statement
     // execute query
-    
-    // keyspace: demo, table: tweets_by_user
     
     // 404 for null/empty
     // 200 and return list if non-empty
