@@ -343,7 +343,7 @@ SELECT *
 Now the output no longer should include Reducer tasks. Please do NOT actually run the query as it's too large for the 
 Docker container with its default Hive settings (even with a LIMIT clause).
 
-#### ii. Sorted-Merge-Bucket
+#### ii. Sort-Merge-Bucket (SMB)
 **Data Preparation**
 
 ```sql
