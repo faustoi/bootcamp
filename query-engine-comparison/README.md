@@ -337,8 +337,8 @@ SELECT *
        ON op.product_id = p.product_id
 ;
 -- Now the output no longer should have Reducer tasks
--- Do NOT actually run the query as it’s too large for the -- Docker container with its default Hive settings even with 
--- a LIMIT clause.
+-- Do NOT actually run the query as it’s too large for the Docker container with its default Hive settings even with a
+-- LIMIT clause.
 ```
 Now the output no longer should include Reducer tasks. Please do NOT actually run the query as it's too large for the 
 Docker container with its default Hive settings (even with a LIMIT clause).
