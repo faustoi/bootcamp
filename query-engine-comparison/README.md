@@ -422,33 +422,35 @@ exit;
 
 ## 9. Spark SQL (PySpark Shell)
 ```bash
-pyspark --packages com.databricks:spark-csv_2.10:1.5.0,com.databricks:spark-avro_2.11:3.2.0
+pyspark
 ```
 Once the PySpark shell has loaded, we'll try the below PySpark code:
 ```python
-products_df = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/cloudera/instacart/products/products.csv')
+products_df = sqlContext.read.parquet('/user/cloudera/instacart/products_parquet/')
  
 products_df.registerTempTable("products")
  
-orders_df = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/cloudera/instacart/orders/orders.csv')
+orders_df = sqlContext.read.parquet('/user/cloudera/instacart/orders_parquet/')
  
 orders_df.registerTempTable("orders")
  
-order_products__prior_df = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load('/user/cloudera/instacart/order_products__prior/order_products__prior.csv')
+order_products__prior_df = sqlContext.read.parquet('/user/cloudera/instacart/order_products__prior_parquet/')
  
 order_products__prior_df.registerTempTable("order_products__prior")
  
 query = """
-SELECT * 
+SELECT p.product_name, 
+       COUNT(p.product_name) AS c
   FROM order_products__prior AS op
-       JOIN orders AS o
-       ON op.order_id = o.order_id
        JOIN products AS p
        ON op.product_id = p.product_id
+ GROUP BY p.product_name
+ ORDER BY c DESC
+ LIMIT 5
 """
  
-join_results = sqlContext.sql(query)
-join_results.show()
+query_results = sqlContext.sql(query)
+query_results.show()
 ```
 Spark gives you more programmatic control and is well-suited for third-party large-scale machine learning libraries 
 such as MLlib or H20.
