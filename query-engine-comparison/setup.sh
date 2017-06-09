@@ -55,13 +55,4 @@ for daemon in ${DAEMONS}; do
     sudo service ${daemon} start
 done
 
-for table in "orders" "products" "order_products__prior" "aisles" "departments"
-do
-    hadoop fs -mkdir -p /user/cloudera/instacart/${table}
-    hadoop fs -put /data/${table}.csv /user/cloudera/instacart/${table}/${table}.csv
-done
-
-hive -f /hive.ddl.sql
-/formats.sh
-
 exec bash
