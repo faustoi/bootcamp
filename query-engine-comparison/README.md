@@ -267,12 +267,13 @@ USE instacart;
  
 SET hive.execution.engine = spark;
  
-SELECT * 
+SELECT p.product_name, 
+       COUNT(p.product_name) AS c
   FROM order_products__prior_parquet AS op
-       JOIN orders_parquet AS o
-       ON op.order_id = o.order_id
        JOIN products_parquet AS p
        ON op.product_id = p.product_id
+ GROUP BY p.product_name
+ ORDER BY c DESC
  LIMIT 5
 ;
 ```
@@ -325,7 +326,7 @@ SELECT *
 The query plan output should include Reducer tasks. Next, run:
 ```sql
 SET hive.auto.convert.join = true;
-SET hive.auto.convert.join.noconditionaltask.size=999999999;
+SET hive.auto.convert.join.noconditionaltask.size = 999999999;
  
 EXPLAIN 
 SELECT * 
