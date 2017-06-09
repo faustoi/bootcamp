@@ -246,6 +246,7 @@ SELECT *
        ON op.order_id = o.order_id
        JOIN products_parquet AS p
        ON op.product_id = p.product_id
+ LIMIT 5
 ;
 ```
 Note how Hive is slower due to translation into MapReduce jobs. Impala is meant for ad-hoc querying (e.g., from BI 
@@ -267,11 +268,12 @@ USE instacart;
 SET hive.execution.engine = spark;
  
 SELECT * 
-  FROM order_products__prior AS op
-       JOIN orders AS o
+  FROM order_products__prior_parquet AS op
+       JOIN orders_parquet AS o
        ON op.order_id = o.order_id
-       JOIN products AS p
+       JOIN products_parquet AS p
        ON op.product_id = p.product_id
+ LIMIT 5
 ;
 ```
 
@@ -395,8 +397,8 @@ ANALYZE TABLE order_products__prior_smb PARTITION (year = 2017) COMPUTE STATISTI
 The below Hive configuration settings are necessary for inducing a SMB join:
 ```sql
 SET hive.auto.convert.join = true;
-SET hive.auto.convert.join.noconditionaltask.size=999999999;
-SET hive.auto.convert.sortmerge.join=true;
+SET hive.auto.convert.join.noconditionaltask.size = 999999999;
+SET hive.auto.convert.sortmerge.join = true;
 SET hive.optimize.bucketmapjoin = true;
 SET hive.optimize.bucketmapjoin.sortedmerge = true;
  
