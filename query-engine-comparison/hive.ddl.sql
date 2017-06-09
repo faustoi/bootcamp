@@ -19,15 +19,15 @@ TBLPROPERTIES ("skip.header.line.count"="1")
 ;
 
 CREATE EXTERNAL TABLE products (
-  product_id    INT,
+  product_id    INT   ,
   product_name  STRING,
-  aisle_id      INT,
+  aisle_id      INT   ,
   department_id INT
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
 WITH SERDEPROPERTIES (
-  "separatorChar" = ",",
-  "quoteChar"     = '"',
+  "separatorChar" = "," ,
+  "quoteChar"     = '"' ,
   "escapeChar"    = "\\"
 )
 STORED AS TEXTFILE
@@ -36,9 +36,9 @@ TBLPROPERTIES ("skip.header.line.count"="1")
 ;
 
 CREATE EXTERNAL TABLE order_products__prior (
-  order_id          INT,
-  product_id        INT,
-  add_to_cart_order INT,
+  order_id          INT    ,
+  product_id        INT    ,
+  add_to_cart_order INT    ,
   reordered         TINYINT
 )
 ROW FORMAT DELIMITED
