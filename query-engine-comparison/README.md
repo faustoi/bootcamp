@@ -345,7 +345,8 @@ Docker container with its default Hive settings (even with a LIMIT clause).
 
 #### ii. Sort-Merge-Bucket (SMB)
 **Data Preparation**
-
+In our SMB join table definitions, we add a partition by year for demonstration purposes only. Depending on the volume 
+of your production data and your typical query patterns, you'd partition by month, day, or even hour.
 ```sql
 CREATE EXTERNAL TABLE order_products__prior_smb (
   order_id          INT    ,
@@ -373,7 +374,10 @@ CLUSTERED BY (order_id) SORTED by (order_id ASC) INTO 2 BUCKETS
 STORED AS PARQUET
 LOCATION '/user/cloudera/instacart/orders_smb/'
 ;
-
+```
+The table definitions above aren't sufficient to ensure that data are inserted properly. The following Hive setting 
+is necessary for any new records to actually be bucketed during insertion.
+```sql
 SET hive.enforce.bucketing = true;
 
  INSERT INTO TABLE orders_smb PARTITION (year = 2017)
@@ -381,7 +385,10 @@ SET hive.enforce.bucketing = true;
    FROM orders_parquet
 CLUSTER BY order_id
 ;
-
+```
+We temporarily set the execution engine back to MapReduce because this table is too big to process with Spark in this 
+Docker container. 
+```sql
 SET hive.execution.engine = mr;
 
  INSERT INTO TABLE order_products__prior_smb PARTITION (year = 2017)
