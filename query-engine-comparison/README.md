@@ -465,8 +465,11 @@ such as MLlib or H20.
 
 ## Schema Evolution
 Lets look at Schema Evolution. Most of these data formats (Avro, Parquet, and ORC for example) support adding, changing, and remobving columns.
-In this example we are going to make a copy of the product_avro file *to show how easy it is copy the table from one format to another*; Create a new column, and see how there is no data in the column (also show how to do a ISNULL(col1, 'GB') / NVL(col1, 'GB') function too); Add more data (in this case add the same data but change some current values), add values to the **new column**; Show the new data/values in the new column
+In this example we are going to make a copy of the product_avro file *to show how easy it is copy the table from one format to another*; Create a new column, and see how there is no data in the column (also show how to do a ISNULL(col1, 'GB') / NVL(col1, 'GB') functions in hive too); Add more data (in this case add the same data but change some current values), add values to the **new column**; Show the new data/values in the new column
 
+```bash
+hive
+```
 
 ```SQL
 USE instacart;
