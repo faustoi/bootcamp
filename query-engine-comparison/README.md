@@ -462,6 +462,70 @@ query_results.show()
 Spark gives you more programmatic control and is well-suited for third-party large-scale machine learning libraries 
 such as MLlib or H20.
 
+
+## Schema Evolution
+Lets look at Schema Evolution. Most of these data formats (Avro, Parquet, and ORC for example) support adding, changing, and remobving columns.
+In this example we are going to make a copy of the product_avro file *to show how easy it is copy the table from one format to another*; Create a new column, and see how there is no data in the column (also show how to do a ISNULL(col1, 'GB') / NVL(col1, 'GB') function too); Add more data (in this case add the same data but change some current values), add values to the **new column**; Show the new data/values in the new column
+
+
+```SQL
+USE instacart;
+
+set parquet.compression=SNAPPY;
+
+CREATE TABLE products_parquet_new STORED as PARQUET AS SELECT * FROM products_avro;
+
+ALTER TABLE products_parquet_new ADD COLUMNS (country_code string);
+
+SELECT country_code,
+        count(1) AS count_
+FROM (select
+    CASE
+    WHEN LENGTH(country_code) > 0 THEN
+    country_code
+    ELSE 'GB'
+    END AS country_code
+FROM products_parquet_new) AS ppn
+GROUP BY country_code;
+
++--------------+----------+
+| country_code | count_   |
++--------------+----------+
+| GB           | 49688    |
++--------------+----------+
+
+INSERT into products_parquet_new 
+  SELECT CAST(product_id + 100000 AS INT) AS product_id, 
+    product_name, 
+    CAST(aisle_id + 1000 AS INT) AS aisle_id, 
+    department_id, 
+    CASE WHEN product_id%3 = 0 THEN 'FR'  
+      WHEN product_id%3 = 1 THEN 'IE'
+      ELSE 'DE'
+    END AS COUNTRY_CODE 
+  FROM products_parquet;
+
+SELECT country_code,
+        count(1) AS count_
+FROM (select
+    CASE
+    WHEN LENGTH(country_code) > 0 THEN
+    country_code
+    ELSE 'GB'
+    END AS country_code
+FROM products_parquet_new) AS ppn
+GROUP BY country_code;
+
++--------------+----------+
+| country_code | count_   |
++--------------+----------+
+| GB           | 49688    |
+| FR           | 16562    |
+| DE           | 16563    |
+| IE           | 16563    |
++--------------+----------+
+
+```
 ## EC2 Instructions
 ```bash
 # Modify to your assigned EC2 instance:
