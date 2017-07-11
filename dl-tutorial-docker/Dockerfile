@@ -4,10 +4,13 @@ MAINTAINER christian@svds.com
 
 RUN conda install --quiet --yes keras tensorflow
 
-COPY images/ work/images/
+WORKDIR work
+RUN curl https://download.microsoft.com/download/3/E/1/3E1C3F21-ECDB-4869-8368-6DEBA77B919F/kagglecatsanddogs_3367a.zip > cats-dogs.zip
+    && python create_sets.py cats-dogs.zip
+
+COPY images/ images/
 COPY vgg_demo_v4.ipynb work/dl-tutorial.ipynb
-COPY data/ work/data/
 
 USER root
-RUN chown -R jovyan work/
+RUN chown -R jovyan ./
 USER jovyan
